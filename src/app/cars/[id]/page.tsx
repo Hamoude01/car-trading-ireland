@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getCar } from "@/lib/carStore";
@@ -26,11 +26,15 @@ import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
 export default function CarDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const [car] = useState<Car | null>(() => {
-    if (typeof window === "undefined") return null;
-    return getCar(id) || null;
-  });
-  const [loading] = useState(false);
+  const [car, setCar] = useState<Car | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCar(id).then((found) => {
+      setCar(found || null);
+      setLoading(false);
+    });
+  }, [id]);
 
   if (loading) {
     return (

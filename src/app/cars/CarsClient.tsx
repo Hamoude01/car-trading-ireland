@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import CarCard from "@/components/CarCard";
 import {
@@ -16,10 +16,11 @@ import { Search, SlidersHorizontal, X, RotateCcw } from "lucide-react";
 
 export default function CarsClient() {
   const searchParams = useSearchParams();
-  const [cars] = useState<Car[]>(() => {
-    if (typeof window === "undefined") return [];
-    return getCars();
-  });
+  const [cars, setCars] = useState<Car[]>([]);
+
+  useEffect(() => {
+    getCars().then(setCars);
+  }, []);
 
   const [make, setMake] = useState(searchParams.get("make") || "");
   const [county, setCounty] = useState(searchParams.get("county") || "");

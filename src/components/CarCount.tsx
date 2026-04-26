@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { getCars } from "@/lib/carStore";
 
 export default function CarCount() {
-  const [count] = useState(() => {
-    if (typeof window === "undefined") return 0;
-    return getCars().length;
-  });
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    getCars().then((cars) => setCount(cars.length));
+  }, []);
 
   return <strong className="text-white">{count}</strong>;
 }

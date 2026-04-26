@@ -11,21 +11,26 @@ function EditCarContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const [car] = useState<Car | undefined>(() => {
-    if (typeof window === "undefined" || !id) return undefined;
-    return getCar(id);
-  });
-  const [loading] = useState(() => {
-    if (typeof window === "undefined") return true;
-    if (!isAuthenticated()) return true;
-    return false;
-  });
+  const [car, setCar] = useState<Car | undefined>(undefined);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!isAuthenticated()) {
       router.push("/admin");
+      return;
     }
-  }, [router]);
+    if (!id) {
+      Promise.resolve().then(() => {
+        setCar(undefined);
+        setLoading(false);
+      });
+      return;
+    }
+    getCar(id).then((found) => {
+      setCar(found);
+      setLoading(false);
+    });
+  }, [router, id]);
 
   if (loading) {
     return (
