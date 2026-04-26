@@ -1,7 +1,7 @@
 import Link from "next/link";
-import CarCard from "@/components/CarCard";
 import SearchBar from "@/components/SearchBar";
-import { cars } from "@/lib/data";
+import FeaturedCars from "@/components/FeaturedCars";
+import CarCount from "@/components/CarCount";
 import {
   Shield,
   Handshake,
@@ -16,7 +16,6 @@ import {
 import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
 export default function Home() {
-  const featuredCars = cars.filter((car) => car.featured);
 
   return (
     <div>
@@ -27,7 +26,7 @@ export default function Home() {
           <div className="text-center max-w-3xl mx-auto mb-10">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm mb-6">
               <Star className="w-4 h-4 text-accent" />
-              <span>Trusted Car Sales in the South of Ireland</span>
+              <span>Trusted Car Sales Across Ireland</span>
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
               Find Your Perfect
@@ -37,7 +36,7 @@ export default function Home() {
             <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
               Welcome to <strong className="text-white">Hamoude Car Trade</strong> &mdash; browse
               our selection of quality used cars or let us sell your car for you.
-              Based in the south of Ireland.
+              Serving buyers and sellers across all of Ireland.
             </p>
           </div>
 
@@ -49,7 +48,7 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <Car className="w-5 h-5 text-accent" />
               <span>
-                <strong className="text-white">{cars.length}+</strong> Cars
+                <CarCount />+ Cars
                 Available
               </span>
             </div>
@@ -88,11 +87,7 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredCars.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
+          <FeaturedCars />
         </div>
       </section>
 

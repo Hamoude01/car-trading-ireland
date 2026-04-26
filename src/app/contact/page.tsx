@@ -139,7 +139,7 @@ export default function ContactPage() {
                 <h3 className="font-bold text-lg">Location</h3>
               </div>
               <p className="text-gray-600 mb-4">
-                Based in the south of Ireland. Viewings and test drives
+                Serving all of Ireland. Viewings and test drives
                 arranged by appointment.
               </p>
 

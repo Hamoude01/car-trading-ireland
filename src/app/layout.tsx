@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Hamoude Car Trade | Quality Used Cars in Ireland",
   description:
-    "Find your perfect car at Hamoude Car Trade. Browse quality used cars for sale across Ireland. We also help you sell your car on commission. Based in the south of Ireland.",
+    "Find your perfect car at Hamoude Car Trade. Browse quality used cars for sale across Ireland. We also help you sell your car on commission. Serving all of Ireland.",
   keywords: [
     "cars for sale Ireland",
     "used cars Ireland",

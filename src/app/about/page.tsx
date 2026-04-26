@@ -21,8 +21,8 @@ export default function AboutPage() {
             About Hamoude Car Trade
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
-            Your trusted partner for buying and selling quality cars in the
-            south of Ireland
+            Your trusted partner for buying and selling quality cars across
+            Ireland
           </p>
         </div>
       </div>
@@ -36,7 +36,7 @@ export default function AboutPage() {
               <p>
                 Hamoude Car Trade was born out of a passion for cars and a
                 desire to make the car buying and selling experience better for
-                everyone in Ireland. Based in the south of Ireland, we saw an
+                everyone in Ireland. We saw an
                 opportunity to bridge the gap between private sellers and buyers
                 with a trusted, professional service.
               </p>
@@ -198,9 +198,9 @@ export default function AboutPage() {
             <h2 className="text-2xl font-bold">Our Location</h2>
           </div>
           <p className="text-gray-600 leading-relaxed mb-4">
-            We&apos;re based in the south of Ireland, serving customers across
-            Munster and beyond. Contact us to arrange a viewing or test drive at
-            a time that suits you.
+            We serve customers across all of Ireland &mdash; North and South.
+            Contact us to arrange a viewing or test drive at a time that suits
+            you.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link

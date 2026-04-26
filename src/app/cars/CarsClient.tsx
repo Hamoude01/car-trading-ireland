@@ -4,17 +4,22 @@ import { useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import CarCard from "@/components/CarCard";
 import {
-  cars,
   makes,
   counties,
   bodyTypes,
   fuelTypes,
   yearRange,
 } from "@/lib/data";
+import { getCars } from "@/lib/carStore";
+import type { Car } from "@/lib/types";
 import { Search, SlidersHorizontal, X, RotateCcw } from "lucide-react";
 
 export default function CarsClient() {
   const searchParams = useSearchParams();
+  const [cars] = useState<Car[]>(() => {
+    if (typeof window === "undefined") return [];
+    return getCars();
+  });
 
   const [make, setMake] = useState(searchParams.get("make") || "");
   const [county, setCounty] = useState(searchParams.get("county") || "");
@@ -74,7 +79,7 @@ export default function CarsClient() {
     }
 
     return filtered;
-  }, [make, county, minYear, maxPrice, fuelType, bodyType, transmission, sortBy, searchQuery]);
+  }, [cars, make, county, minYear, maxPrice, fuelType, bodyType, transmission, sortBy, searchQuery]);
 
   const activeFilterCount = [
     make,

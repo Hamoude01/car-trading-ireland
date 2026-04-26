@@ -1,6 +1,10 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
-import { cars } from "@/lib/data";
+import { useParams } from "next/navigation";
+import { getCar } from "@/lib/carStore";
+import type { Car } from "@/lib/types";
 import {
   ArrowLeft,
   Calendar,
@@ -20,20 +24,35 @@ import {
 } from "lucide-react";
 import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
-export function generateStaticParams() {
-  return cars.map((car) => ({ id: car.id }));
-}
+export default function CarDetailPage() {
+  const { id } = useParams<{ id: string }>();
+  const [car] = useState<Car | null>(() => {
+    if (typeof window === "undefined") return null;
+    return getCar(id) || null;
+  });
+  const [loading] = useState(false);
 
-export default async function CarDetailPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-  const car = cars.find((c) => c.id === id);
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   if (!car) {
-    notFound();
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <h1 className="text-2xl font-bold">Car Not Found</h1>
+        <p className="text-gray-600">This listing may have been removed.</p>
+        <Link
+          href="/cars"
+          className="bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-6 rounded-xl transition-colors"
+        >
+          Browse All Cars
+        </Link>
+      </div>
+    );
   }
 
   return (
@@ -55,41 +74,61 @@ export default async function CarDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Image Gallery Placeholder */}
+            {/* Image Gallery */}
             <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
-              <div className="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
-                <div className="text-center text-gray-400">
-                  <svg
-                    className="w-24 h-24 mx-auto mb-3 opacity-30"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="text-lg font-medium">
-                    {car.make} {car.model}
-                  </p>
-                  <p className="text-sm mt-1">
-                    Photos coming soon &mdash; contact us for more details
-                  </p>
+              {car.images && car.images.length > 0 ? (
+                <div className="aspect-[16/9] relative">
+                  <img
+                    src={car.images[0]}
+                    alt={car.title}
+                    className="w-full h-full object-cover"
+                  />
+                  {car.featured && (
+                    <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
+                      Featured
+                    </span>
+                  )}
+                  {car.sellerType === "owner" && (
+                    <span className="absolute top-4 right-4 bg-success text-white px-4 py-1.5 rounded-full text-sm font-bold">
+                      Our Stock
+                    </span>
+                  )}
                 </div>
-                {car.featured && (
-                  <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
-                    Featured
-                  </span>
-                )}
-                {car.sellerType === "owner" && (
-                  <span className="absolute top-4 right-4 bg-success text-white px-4 py-1.5 rounded-full text-sm font-bold">
-                    Our Stock
-                  </span>
-                )}
-              </div>
+              ) : (
+                <div className="aspect-[16/9] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
+                  <div className="text-center text-gray-400">
+                    <svg
+                      className="w-24 h-24 mx-auto mb-3 opacity-30"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                      />
+                    </svg>
+                    <p className="text-lg font-medium">
+                      {car.make} {car.model}
+                    </p>
+                    <p className="text-sm mt-1">
+                      Photos coming soon &mdash; contact us for more details
+                    </p>
+                  </div>
+                  {car.featured && (
+                    <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
+                      Featured
+                    </span>
+                  )}
+                  {car.sellerType === "owner" && (
+                    <span className="absolute top-4 right-4 bg-success text-white px-4 py-1.5 rounded-full text-sm font-bold">
+                      Our Stock
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Title & Price (Mobile) */}
@@ -210,23 +249,27 @@ export default async function CarDetailPage({
             {/* Description */}
             <div className="bg-white rounded-2xl shadow-sm border border-border p-6">
               <h2 className="text-xl font-bold mb-4">Description</h2>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                 {car.description}
               </p>
             </div>
 
             {/* Features */}
-            <div className="bg-white rounded-2xl shadow-sm border border-border p-6">
-              <h2 className="text-xl font-bold mb-4">Features &amp; Specs</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {car.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-success flex-shrink-0" />
-                    <span className="text-gray-700">{feature}</span>
-                  </div>
-                ))}
+            {car.features.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-sm border border-border p-6">
+                <h2 className="text-xl font-bold mb-4">
+                  Features &amp; Specs
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {car.features.map((feature, idx) => (
+                    <div key={idx} className="flex items-center gap-2">
+                      <Check className="w-4 h-4 text-success flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Sidebar */}

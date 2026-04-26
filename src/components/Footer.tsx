@@ -20,7 +20,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-gray-300 text-sm leading-relaxed">
-              Your trusted car dealer in the south of Ireland. We sell our own
+              Your trusted car dealer serving all of Ireland. We sell our own
               quality cars and help private sellers get the best price for
               theirs on commission.
             </p>
@@ -152,7 +152,7 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2 text-sm text-gray-300">
                 <MapPin className="w-4 h-4 text-accent flex-shrink-0 mt-0.5" />
-                <span>South of Ireland</span>
+                <span>Ireland</span>
               </li>
             </ul>
             <div className="flex gap-3 mt-4">
