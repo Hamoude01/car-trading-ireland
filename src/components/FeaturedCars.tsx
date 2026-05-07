@@ -1,15 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CarCard from "./CarCard";
 import { getCars } from "@/lib/carStore";
 import type { Car } from "@/lib/types";
 
 export default function FeaturedCars() {
-  const [cars] = useState<Car[]>(() => {
-    if (typeof window === "undefined") return [];
-    return getCars().filter((car) => car.featured);
-  });
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCars().then((allCars) => {
+      setCars(allCars.filter((car) => car.featured));
+      setLoading(false);
+    });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent" />
+      </div>
+    );
+  }
 
   if (cars.length === 0) {
     return (
