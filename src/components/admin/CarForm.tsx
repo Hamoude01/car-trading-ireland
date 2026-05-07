@@ -93,8 +93,11 @@ export default function CarForm({ existingCar }: CarFormProps) {
     setImageUrls(imageUrls.filter((_, i) => i !== index));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSaving(true);
 
     const car: Car = {
       id: existingCar?.id || generateId(),
@@ -124,8 +127,13 @@ export default function CarForm({ existingCar }: CarFormProps) {
       previousOwners: formData.previousOwners,
     };
 
-    saveCar(car);
-    router.push("/admin/dashboard");
+    try {
+      await saveCar(car);
+      router.push("/admin/dashboard");
+    } catch {
+      setSaving(false);
+      alert("Failed to save car. Please try again.");
+    }
   };
 
   return (
@@ -576,10 +584,11 @@ export default function CarForm({ existingCar }: CarFormProps) {
             </Link>
             <button
               type="submit"
-              className="flex items-center gap-2 bg-accent hover:bg-accent-hover text-white font-bold py-3 px-8 rounded-xl transition-colors"
+              disabled={saving}
+              className="flex items-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 px-8 rounded-xl transition-colors"
             >
               <Save className="w-5 h-5" />
-              {isEditing ? "Save Changes" : "Add Car"}
+              {saving ? "Saving..." : isEditing ? "Save Changes" : "Add Car"}
             </button>
           </div>
         </form>

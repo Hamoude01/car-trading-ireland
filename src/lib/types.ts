@@ -23,3 +23,18 @@ export interface Car {
   dateAdded: string;
   previousOwners: number;
 }
+
+export interface Submission {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  car_make: string;
+  car_model: string;
+  car_year: string;
+  mileage: string;
+  asking_price: string;
+  description: string;
+  status: "pending" | "reviewed" | "accepted" | "rejected";
+  created_at: string;
+}

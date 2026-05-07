@@ -10,8 +10,10 @@ import {
   ExternalLink,
   ArrowRight,
   Shield,
+  Loader2,
 } from "lucide-react";
 import { FacebookIcon } from "@/components/SocialIcons";
+import { createSubmission } from "@/lib/carStore";
 
 export default function SellYourCarPage() {
   const [formData, setFormData] = useState({
@@ -26,10 +28,31 @@ export default function SellYourCarPage() {
     description: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+    try {
+      await createSubmission({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        car_make: formData.carMake,
+        car_model: formData.carModel,
+        car_year: formData.carYear,
+        mileage: formData.mileage,
+        asking_price: formData.askingPrice,
+        description: formData.description,
+      });
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again or contact us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -360,11 +383,19 @@ export default function SellYourCarPage() {
                   />
                 </div>
 
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-accent hover:bg-accent-hover text-white font-bold py-3.5 px-6 rounded-xl transition-colors text-lg"
+                  disabled={submitting}
+                  className="w-full bg-accent hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 px-6 rounded-xl transition-colors text-lg flex items-center justify-center gap-2"
                 >
-                  Submit Car Details
+                  {submitting && <Loader2 className="w-5 h-5 animate-spin" />}
+                  {submitting ? "Submitting..." : "Submit Car Details"}
                 </button>
 
                 <p className="text-center text-xs text-gray-500">

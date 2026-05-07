@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import CarCard from "@/components/CarCard";
 import {
@@ -16,10 +16,15 @@ import { Search, SlidersHorizontal, X, RotateCcw } from "lucide-react";
 
 export default function CarsClient() {
   const searchParams = useSearchParams();
-  const [cars] = useState<Car[]>(() => {
-    if (typeof window === "undefined") return [];
-    return getCars();
-  });
+  const [cars, setCars] = useState<Car[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getCars().then((data) => {
+      setCars(data);
+      setLoading(false);
+    });
+  }, []);
 
   const [make, setMake] = useState(searchParams.get("make") || "");
   const [county, setCounty] = useState(searchParams.get("county") || "");
@@ -324,37 +329,44 @@ export default function CarsClient() {
           </div>
         )}
 
-        {/* Results Count */}
-        <p className="text-gray-600 mb-6">
-          Showing <strong>{filteredCars.length}</strong>{" "}
-          {filteredCars.length === 1 ? "car" : "cars"}
-        </p>
-
-        {/* Car Grid */}
-        {filteredCars.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredCars.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
+        {/* Results */}
+        {loading ? (
+          <div className="flex justify-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
           </div>
         ) : (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-              <Search className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">
-              No cars found
-            </h3>
-            <p className="text-gray-500 mb-6">
-              Try adjusting your filters or search terms
+          <>
+            <p className="text-gray-600 mb-6">
+              Showing <strong>{filteredCars.length}</strong>{" "}
+              {filteredCars.length === 1 ? "car" : "cars"}
             </p>
-            <button
-              onClick={clearFilters}
-              className="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-3 rounded-xl transition-colors"
-            >
-              Clear All Filters
-            </button>
-          </div>
+
+            {filteredCars.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredCars.map((car) => (
+                  <CarCard key={car.id} car={car} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Search className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                  No cars found
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Try adjusting your filters or search terms
+                </p>
+                <button
+                  onClick={clearFilters}
+                  className="bg-primary hover:bg-primary-dark text-white font-medium px-6 py-3 rounded-xl transition-colors"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
