@@ -47,9 +47,13 @@ export default function AdminDashboard() {
   }, [router]);
 
   const handleDelete = async (id: string) => {
-    await deleteCar(id);
-    const updated = await getCars();
-    setCars(updated);
+    try {
+      await deleteCar(id);
+      const updated = await getCars();
+      setCars(updated);
+    } catch {
+      alert("Failed to delete car. Please try again.");
+    }
     setDeleteId(null);
   };
 
@@ -62,15 +66,23 @@ export default function AdminDashboard() {
     id: string,
     status: Submission["status"]
   ) => {
-    await updateSubmissionStatus(id, status);
-    const updated = await getSubmissions();
-    setSubmissions(updated);
+    try {
+      await updateSubmissionStatus(id, status);
+      const updated = await getSubmissions();
+      setSubmissions(updated);
+    } catch {
+      alert("Failed to update submission status. Please try again.");
+    }
   };
 
   const handleDeleteSubmission = async (id: string) => {
-    await deleteSubmission(id);
-    const updated = await getSubmissions();
-    setSubmissions(updated);
+    try {
+      await deleteSubmission(id);
+      const updated = await getSubmissions();
+      setSubmissions(updated);
+    } catch {
+      alert("Failed to delete submission. Please try again.");
+    }
     setDeleteSubId(null);
   };
 
