@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { getSupabase } from "./supabase";
 import type { Car, Submission } from "./types";
 
 const AUTH_KEY = "hamoude_admin_auth";
@@ -63,7 +63,7 @@ function carToDbRow(car: Car): Record<string, unknown> {
 }
 
 export async function getCars(): Promise<Car[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("cars")
     .select("*")
     .order("date_added", { ascending: false });
@@ -75,7 +75,7 @@ export async function getCars(): Promise<Car[]> {
 }
 
 export async function getCar(id: string): Promise<Car | undefined> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("cars")
     .select("*")
     .eq("id", id)
@@ -86,7 +86,7 @@ export async function getCar(id: string): Promise<Car | undefined> {
 
 export async function saveCar(car: Car): Promise<void> {
   const row = carToDbRow(car);
-  const { error } = await supabase.from("cars").upsert(row, { onConflict: "id" });
+  const { error } = await getSupabase().from("cars").upsert(row, { onConflict: "id" });
   if (error) {
     console.error("Error saving car:", error);
     throw error;
@@ -94,7 +94,7 @@ export async function saveCar(car: Car): Promise<void> {
 }
 
 export async function deleteCar(id: string): Promise<void> {
-  const { error } = await supabase.from("cars").delete().eq("id", id);
+  const { error } = await getSupabase().from("cars").delete().eq("id", id);
   if (error) {
     console.error("Error deleting car:", error);
     throw error;
@@ -108,7 +108,7 @@ export function generateId(): string {
 // --- Submission operations (Supabase) ---
 
 export async function getSubmissions(): Promise<Submission[]> {
-  const { data, error } = await supabase
+  const { data, error } = await getSupabase()
     .from("submissions")
     .select("*")
     .order("created_at", { ascending: false });
@@ -122,7 +122,7 @@ export async function getSubmissions(): Promise<Submission[]> {
 export async function createSubmission(
   submission: Omit<Submission, "id" | "status" | "created_at">
 ): Promise<void> {
-  const { error } = await supabase.from("submissions").insert({
+  const { error } = await getSupabase().from("submissions").insert({
     ...submission,
     status: "pending",
   });
@@ -136,7 +136,7 @@ export async function updateSubmissionStatus(
   id: string,
   status: Submission["status"]
 ): Promise<void> {
-  const { error } = await supabase
+  const { error } = await getSupabase()
     .from("submissions")
     .update({ status })
     .eq("id", id);
@@ -147,7 +147,7 @@ export async function updateSubmissionStatus(
 }
 
 export async function deleteSubmission(id: string): Promise<void> {
-  const { error } = await supabase.from("submissions").delete().eq("id", id);
+  const { error } = await getSupabase().from("submissions").delete().eq("id", id);
   if (error) {
     console.error("Error deleting submission:", error);
     throw error;
