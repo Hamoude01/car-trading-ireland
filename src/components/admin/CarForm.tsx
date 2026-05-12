@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { saveCar, generateId } from "@/lib/carStore";
+import { uploadCarImage } from "@/lib/imageUpload";
 import {
   makes,
   counties,
@@ -13,7 +14,7 @@ import {
   colours,
 } from "@/lib/data";
 import type { Car } from "@/lib/types";
-import { ArrowLeft, Plus, X, Save, ImagePlus, Car as CarIcon } from "lucide-react";
+import { ArrowLeft, Plus, X, Save, ImagePlus, Upload, Car as CarIcon, Loader2 } from "lucide-react";
 
 interface CarFormProps {
   existingCar?: Car;
@@ -53,6 +54,10 @@ export default function CarForm({ existingCar }: CarFormProps) {
     existingCar?.images || []
   );
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const carIdRef = useRef(existingCar?.id || generateId());
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -89,6 +94,31 @@ export default function CarForm({ existingCar }: CarFormProps) {
     }
   };
 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setUploading(true);
+    const newUrls: string[] = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      setUploadProgress(`Uploading ${i + 1} of ${files.length}...`);
+      try {
+        const url = await uploadCarImage(file, carIdRef.current);
+        newUrls.push(url);
+      } catch (err) {
+        console.error("Upload failed for", file.name, err);
+        alert(`Failed to upload ${file.name}. Please try again.`);
+      }
+    }
+
+    setImageUrls((prev) => [...prev, ...newUrls]);
+    setUploading(false);
+    setUploadProgress("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const removeImage = (index: number) => {
     setImageUrls(imageUrls.filter((_, i) => i !== index));
   };
@@ -100,7 +130,7 @@ export default function CarForm({ existingCar }: CarFormProps) {
     setSaving(true);
 
     const car: Car = {
-      id: existingCar?.id || generateId(),
+      id: carIdRef.current,
       title:
         formData.title ||
         `${formData.year} ${formData.make} ${formData.model}`,
@@ -521,9 +551,48 @@ export default function CarForm({ existingCar }: CarFormProps) {
           <div className="bg-white rounded-2xl border border-border p-6">
             <h2 className="text-lg font-bold mb-2">Photos</h2>
             <p className="text-sm text-gray-500 mb-4">
-              Paste image URLs from Facebook, Instagram, or any image hosting
-              service.
+              Upload photos from your device or paste image URLs.
             </p>
+
+            {/* Upload from device */}
+            <div className="mb-4">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileUpload}
+                className="hidden"
+                id="photo-upload"
+              />
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+                className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white font-semibold py-3 px-4 rounded-xl transition-colors"
+              >
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {uploadProgress}
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5" />
+                    Upload Photos from Device
+                  </>
+                )}
+              </button>
+            </div>
+
+            {/* OR divider */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 border-t border-border" />
+              <span className="text-xs text-gray-400 font-medium">OR PASTE URL</span>
+              <div className="flex-1 border-t border-border" />
+            </div>
+
+            {/* Paste URL */}
             <div className="flex gap-2 mb-4">
               <input
                 type="url"
