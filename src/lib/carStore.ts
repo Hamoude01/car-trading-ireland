@@ -1,5 +1,5 @@
 import { getSupabase } from "./supabase";
-import type { Car, Submission } from "./types";
+import type { Car, Submission, ContactMessage } from "./types";
 
 const AUTH_KEY = "hamoude_admin_auth";
 const ADMIN_PASSWORD = "hamoude2024";
@@ -150,6 +150,55 @@ export async function deleteSubmission(id: string): Promise<void> {
   const { error } = await getSupabase().from("submissions").delete().eq("id", id);
   if (error) {
     console.error("Error deleting submission:", error);
+    throw error;
+  }
+}
+
+// --- Contact message operations (Supabase) ---
+
+export async function getContactMessages(): Promise<ContactMessage[]> {
+  const { data, error } = await getSupabase()
+    .from("contact_messages")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Error fetching contact messages:", error);
+    return [];
+  }
+  return (data || []) as ContactMessage[];
+}
+
+export async function createContactMessage(
+  message: Omit<ContactMessage, "id" | "status" | "created_at">
+): Promise<void> {
+  const { error } = await getSupabase().from("contact_messages").insert({
+    ...message,
+    status: "unread",
+  });
+  if (error) {
+    console.error("Error creating contact message:", error);
+    throw error;
+  }
+}
+
+export async function updateContactMessageStatus(
+  id: string,
+  status: ContactMessage["status"]
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from("contact_messages")
+    .update({ status })
+    .eq("id", id);
+  if (error) {
+    console.error("Error updating contact message:", error);
+    throw error;
+  }
+}
+
+export async function deleteContactMessage(id: string): Promise<void> {
+  const { error } = await getSupabase().from("contact_messages").delete().eq("id", id);
+  if (error) {
+    console.error("Error deleting contact message:", error);
     throw error;
   }
 }

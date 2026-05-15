@@ -38,3 +38,14 @@ export interface Submission {
   status: "pending" | "reviewed" | "accepted" | "rejected";
   created_at: string;
 }
+
+export interface ContactMessage {
+  id: string;
+  name: string;
+  phone: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: "unread" | "read";
+  created_at: string;
+}
