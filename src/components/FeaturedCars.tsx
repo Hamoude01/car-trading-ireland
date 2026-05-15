@@ -5,13 +5,20 @@ import CarCard from "./CarCard";
 import { getCars } from "@/lib/carStore";
 import type { Car } from "@/lib/types";
 
+const MAX_FEATURED = 4;
+
 export default function FeaturedCars() {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getCars().then((allCars) => {
-      setCars(allCars.filter((car) => car.featured));
+      const featured = allCars.filter((car) => car.featured);
+      if (featured.length > 0) {
+        setCars(featured.slice(0, MAX_FEATURED));
+      } else {
+        setCars(allCars.slice(0, MAX_FEATURED));
+      }
       setLoading(false);
     });
   }, []);
@@ -27,7 +34,7 @@ export default function FeaturedCars() {
   if (cars.length === 0) {
     return (
       <div className="text-center py-12 text-gray-500">
-        <p className="text-lg">No featured cars at the moment.</p>
+        <p className="text-lg">No cars listed yet.</p>
         <p className="text-sm mt-1">Check back soon for new listings!</p>
       </div>
     );
