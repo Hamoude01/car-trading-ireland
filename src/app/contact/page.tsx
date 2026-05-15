@@ -8,8 +8,20 @@ import {
   Check,
   Send,
   Clock,
+  Loader2,
 } from "lucide-react";
 import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
+import { createContactMessage } from "@/lib/carStore";
+
+const WHATSAPP_NUMBER = "353877110508";
+
+const SUBJECT_LABELS: Record<string, string> = {
+  buying: "I want to buy a car",
+  selling: "I want to sell my car",
+  enquiry: "General enquiry about a listing",
+  "test-drive": "Arrange a test drive",
+  other: "Other",
+};
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -20,10 +32,45 @@ export default function ContactPage() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+
+    try {
+      await createContactMessage({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      });
+
+      const subjectText = SUBJECT_LABELS[formData.subject] || formData.subject;
+      const whatsappMessage = [
+        `New message from ${formData.name}`,
+        formData.phone ? `Phone: ${formData.phone}` : "",
+        formData.email ? `Email: ${formData.email}` : "",
+        `Subject: ${subjectText}`,
+        "",
+        formData.message,
+      ]
+        .filter(Boolean)
+        .join("\n");
+
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
+      window.open(whatsappUrl, "_blank");
+
+      setSubmitted(true);
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      setError("Failed to send message. Please try again or contact us on WhatsApp directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleChange = (
@@ -293,12 +340,28 @@ export default function ContactPage() {
                   />
                 </div>
 
+                {error && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-white font-bold py-3.5 px-6 rounded-xl transition-colors text-lg"
+                  disabled={submitting}
+                  className="w-full flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover disabled:opacity-50 text-white font-bold py-3.5 px-6 rounded-xl transition-colors text-lg"
                 >
-                  <Send className="w-5 h-5" />
-                  Send Message
+                  {submitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-5 h-5" />
+                      Send Message
+                    </>
+                  )}
                 </button>
               </form>
             )}

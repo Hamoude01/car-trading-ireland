@@ -11,9 +11,11 @@ import {
   getSubmissions,
   updateSubmissionStatus,
   deleteSubmission,
+  getContactMessages,
+  updateContactMessageStatus,
+  deleteContactMessage,
 } from "@/lib/carStore";
-import type { Car } from "@/lib/types";
-import type { Submission } from "@/lib/types";
+import type { Car, Submission, ContactMessage } from "@/lib/types";
 import {
   Plus,
   Pencil,
@@ -27,15 +29,20 @@ import {
   CheckCircle,
   XCircle,
   Clock,
+  Mail,
+  MailOpen,
+  MessageCircle,
 } from "lucide-react";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [cars, setCars] = useState<Car[]>([]);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteSubId, setDeleteSubId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"cars" | "submissions">("cars");
+  const [deleteMsgId, setDeleteMsgId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"cars" | "submissions" | "messages">("cars");
 
   useEffect(() => {
     if (!isAuthenticated()) {
@@ -44,6 +51,7 @@ export default function AdminDashboard() {
     }
     getCars().then(setCars);
     getSubmissions().then(setSubmissions);
+    getContactMessages().then(setMessages);
   }, [router]);
 
   const handleDelete = async (id: string) => {
@@ -86,9 +94,34 @@ export default function AdminDashboard() {
     setDeleteSubId(null);
   };
 
+  const handleMessageStatus = async (
+    id: string,
+    status: ContactMessage["status"]
+  ) => {
+    try {
+      await updateContactMessageStatus(id, status);
+      const updated = await getContactMessages();
+      setMessages(updated);
+    } catch {
+      alert("Failed to update message status. Please try again.");
+    }
+  };
+
+  const handleDeleteMessage = async (id: string) => {
+    try {
+      await deleteContactMessage(id);
+      const updated = await getContactMessages();
+      setMessages(updated);
+    } catch {
+      alert("Failed to delete message. Please try again.");
+    }
+    setDeleteMsgId(null);
+  };
+
   const ownCars = cars.filter((c) => c.sellerType === "owner");
   const commissionCars = cars.filter((c) => c.sellerType === "commission");
   const pendingSubmissions = submissions.filter((s) => s.status === "pending");
+  const unreadMessages = messages.filter((m) => m.status === "unread");
 
   return (
     <div className="min-h-screen bg-muted">
@@ -121,7 +154,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
           <div className="bg-white rounded-xl border border-border p-6">
             <p className="text-sm text-gray-500">Total Cars</p>
             <p className="text-3xl font-bold text-primary">{cars.length}</p>
@@ -143,6 +176,15 @@ export default function AdminDashboard() {
             <p className="text-sm text-gray-500">Pending Submissions</p>
             <p className="text-3xl font-bold text-orange-500">
               {pendingSubmissions.length}
+            </p>
+          </div>
+          <div
+            className="bg-white rounded-xl border border-border p-6 cursor-pointer hover:border-accent transition-colors"
+            onClick={() => setActiveTab("messages")}
+          >
+            <p className="text-sm text-gray-500">Unread Messages</p>
+            <p className="text-3xl font-bold text-blue-500">
+              {unreadMessages.length}
             </p>
           </div>
         </div>
@@ -174,9 +216,24 @@ export default function AdminDashboard() {
               </span>
             )}
           </button>
+          <button
+            onClick={() => setActiveTab("messages")}
+            className={`pb-3 px-1 font-semibold text-sm border-b-2 transition-colors flex items-center gap-2 ${
+              activeTab === "messages"
+                ? "border-accent text-accent"
+                : "border-transparent text-gray-500 hover:text-foreground"
+            }`}
+          >
+            Contact Messages
+            {unreadMessages.length > 0 && (
+              <span className="bg-blue-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                {unreadMessages.length}
+              </span>
+            )}
+          </button>
         </div>
 
-        {activeTab === "cars" ? (
+        {activeTab === "cars" && (
           <>
             {/* Actions */}
             <div className="flex items-center justify-between mb-6">
@@ -338,7 +395,9 @@ export default function AdminDashboard() {
               </div>
             )}
           </>
-        ) : (
+        )}
+
+        {activeTab === "submissions" && (
           <>
             {/* Submissions Tab */}
             <div className="flex items-center justify-between mb-6">
@@ -512,6 +571,169 @@ export default function AdminDashboard() {
                         ) : (
                           <button
                             onClick={() => setDeleteSubId(sub.id)}
+                            className="p-1.5 text-gray-400 hover:text-red-500 transition-colors self-center"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === "messages" && (
+          <>
+            {/* Contact Messages Tab */}
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">Contact Messages</h2>
+            </div>
+
+            {messages.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-border p-12 text-center">
+                <Mail className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+                <h3 className="text-xl font-bold mb-2">No messages yet</h3>
+                <p className="text-gray-500">
+                  When customers send messages through the Contact page,
+                  they&apos;ll appear here.
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {messages.map((msg) => (
+                  <div
+                    key={msg.id}
+                    className={`bg-white rounded-xl border p-6 ${
+                      msg.status === "unread"
+                        ? "border-blue-200 bg-blue-50/30"
+                        : "border-border"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          {msg.status === "unread" ? (
+                            <Mail className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                          ) : (
+                            <MailOpen className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                          )}
+                          <h3 className="font-bold text-lg">{msg.name}</h3>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                              msg.status === "unread"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-gray-100 text-gray-600"
+                            }`}
+                          >
+                            {msg.status === "unread" ? "New" : "Read"}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
+                          {msg.email && (
+                            <p>
+                              <span className="font-medium text-gray-800">
+                                Email:
+                              </span>{" "}
+                              <a
+                                href={`mailto:${msg.email}`}
+                                className="text-primary hover:underline"
+                              >
+                                {msg.email}
+                              </a>
+                            </p>
+                          )}
+                          {msg.phone && (
+                            <p>
+                              <span className="font-medium text-gray-800">
+                                Phone:
+                              </span>{" "}
+                              <a
+                                href={`tel:${msg.phone}`}
+                                className="text-primary hover:underline"
+                              >
+                                {msg.phone}
+                              </a>
+                            </p>
+                          )}
+                          <p>
+                            <span className="font-medium text-gray-800">
+                              Subject:
+                            </span>{" "}
+                            {msg.subject}
+                          </p>
+                        </div>
+                        <div className="text-sm text-gray-600 bg-muted rounded-lg p-3">
+                          {msg.message}
+                        </div>
+                        <div className="flex items-center gap-3 mt-2">
+                          <p className="text-xs text-gray-400">
+                            Received:{" "}
+                            {new Date(msg.created_at).toLocaleDateString(
+                              "en-IE",
+                              {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
+                          </p>
+                          {msg.phone && (
+                            <a
+                              href={`https://wa.me/${msg.phone.replace(/\s+/g, "").replace(/^\+/, "")}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 text-xs text-[#25D366] hover:underline font-medium"
+                            >
+                              <MessageCircle className="w-3 h-3" />
+                              Reply on WhatsApp
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        {msg.status === "unread" ? (
+                          <button
+                            onClick={() =>
+                              handleMessageStatus(msg.id, "read")
+                            }
+                            className="px-3 py-1.5 bg-blue-500 hover:bg-blue-600 text-white text-xs rounded-lg font-semibold transition-colors"
+                          >
+                            Mark Read
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() =>
+                              handleMessageStatus(msg.id, "unread")
+                            }
+                            className="px-3 py-1.5 bg-orange-500 hover:bg-orange-600 text-white text-xs rounded-lg font-semibold transition-colors"
+                          >
+                            Mark Unread
+                          </button>
+                        )}
+                        {deleteMsgId === msg.id ? (
+                          <div className="flex flex-col gap-1">
+                            <button
+                              onClick={() => handleDeleteMessage(msg.id)}
+                              className="px-3 py-1.5 bg-red-600 text-white text-xs rounded-lg font-semibold"
+                            >
+                              Confirm
+                            </button>
+                            <button
+                              onClick={() => setDeleteMsgId(null)}
+                              className="px-3 py-1.5 bg-gray-200 text-gray-600 text-xs rounded-lg font-semibold"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setDeleteMsgId(msg.id)}
                             className="p-1.5 text-gray-400 hover:text-red-500 transition-colors self-center"
                             title="Delete"
                           >
