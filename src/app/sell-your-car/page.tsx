@@ -409,7 +409,7 @@ export default function SellYourCarPage() {
                     WhatsApp
                   </a>{" "}|{" "}
                   <a
-                    href="https://www.facebook.com/mike.mersar"
+                    href="https://www.facebook.com/share/1G3xANNdoR/"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-[#1877F2] font-semibold"
