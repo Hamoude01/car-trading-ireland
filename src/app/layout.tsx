@@ -1,12 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Fraunces, Manrope, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
+  display: "swap",
+});
+
+const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -15,16 +22,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Hamoude Car Trade | Quality Used Cars in Ireland",
+  title: "HamoudeCarTrade | Premium Used Cars in Ireland",
   description:
-    "Find your perfect car at Hamoude Car Trade. Browse quality used cars for sale across Ireland. We also help you sell your car on commission. Serving all of Ireland.",
+    "A curated collection of premium used cars — inspected, NCT verified, and ready to drive away. Buy or sell your car with HamoudeCarTrade, serving all of Ireland.",
   keywords: [
+    "premium used cars Ireland",
     "cars for sale Ireland",
     "used cars Ireland",
     "buy car Ireland",
     "sell car Ireland",
-    "car dealer south Ireland",
-    "second hand cars",
+    "HamoudeCarTrade",
     "Hamoude Car Trade",
   ],
 };
@@ -37,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${fraunces.variable} ${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <Header />

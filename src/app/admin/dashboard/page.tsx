@@ -126,7 +126,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-muted">
       {/* Admin Header */}
-      <header className="bg-primary-dark text-white shadow-lg">
+      <header className="bg-black border-b border-border text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <CarIcon className="w-6 h-6 text-accent" />

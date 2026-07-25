@@ -82,7 +82,7 @@ export default function ContactPage() {
   return (
     <div className="bg-muted min-h-screen">
       {/* Hero */}
-      <div className="bg-gradient-to-br from-primary via-primary-dark to-[#072a40] text-white py-16">
+      <div className="bg-gradient-to-b from-[#141417] to-black text-white py-24 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4">Get In Touch</h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">

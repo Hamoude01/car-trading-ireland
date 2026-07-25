@@ -110,7 +110,7 @@ export default function CarsClient() {
   return (
     <div className="bg-muted min-h-screen">
       {/* Page Header */}
-      <div className="bg-primary text-white py-10">
+      <div className="bg-gradient-to-b from-[#141417] to-black text-white py-16 border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl sm:text-4xl font-bold">Browse Cars</h1>
           <p className="text-gray-300 mt-2">
