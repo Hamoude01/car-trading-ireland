@@ -3,8 +3,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getCar } from "@/lib/carStore";
+import { getCar, getCars } from "@/lib/carStore";
 import type { Car } from "@/lib/types";
+import CarCard from "@/components/CarCard";
+import Lightbox from "@/components/Lightbox";
 import {
   ArrowLeft,
   Calendar,
@@ -23,6 +25,7 @@ import {
   Clock,
   ChevronLeft,
   ChevronRight,
+  Maximize2,
 } from "lucide-react";
 import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
@@ -31,6 +34,9 @@ export default function CarDetailPage() {
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeImage, setActiveImage] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [similar, setSimilar] = useState<Car[]>([]);
+  const [shared, setShared] = useState(false);
 
   useEffect(() => {
     getCar(id).then((found) => {
@@ -38,7 +44,26 @@ export default function CarDetailPage() {
       setActiveImage(0);
       setLoading(false);
     });
+    getCars().then((all) => {
+      setSimilar(all.filter((c) => c.id !== id));
+    });
   }, [id]);
+
+  const handleShare = async () => {
+    const url = typeof window !== "undefined" ? window.location.href : "";
+    const title = car ? car.title : "HamoudeCarTrade";
+    try {
+      if (navigator.share) {
+        await navigator.share({ title, text: `Check out this ${title} on HamoudeCarTrade`, url });
+      } else {
+        await navigator.clipboard.writeText(url);
+        setShared(true);
+        setTimeout(() => setShared(false), 2000);
+      }
+    } catch {
+      /* user cancelled share */
+    }
+  };
 
   if (loading) {
     return (
@@ -62,6 +87,11 @@ export default function CarDetailPage() {
       </div>
     );
   }
+
+  const relatedCars = similar
+    .filter((c) => c.make === car.make)
+    .concat(similar.filter((c) => c.make !== car.make))
+    .slice(0, 3);
 
   return (
     <div className="bg-muted min-h-screen">
@@ -91,9 +121,20 @@ export default function CarDetailPage() {
                       key={activeImage}
                       src={car.images[activeImage]}
                       alt={`${car.title} - photo ${activeImage + 1}`}
-                      className="w-full h-full object-cover"
+                      onClick={() => setLightboxOpen(true)}
+                      className="w-full h-full object-cover cursor-zoom-in"
                       data-testid="car-gallery-main-image"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setLightboxOpen(true)}
+                      aria-label="Open fullscreen gallery"
+                      data-testid="car-gallery-expand-btn"
+                      className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 bg-black/60 hover:bg-black/80 text-white text-xs font-medium px-3 py-1.5 rounded-full transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                      View fullscreen
+                    </button>
                     {car.featured && (
                       <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
                         Featured
@@ -382,9 +423,13 @@ export default function CarDetailPage() {
                   <InstagramIcon className="w-5 h-5" />
                   DM on Instagram
                 </a>
-                <button className="flex items-center justify-center gap-2 w-full border-2 border-border hover:border-primary text-foreground font-semibold py-3 px-6 rounded-xl transition-colors">
-                  <Share2 className="w-5 h-5" />
-                  Share This Car
+                <button
+                  onClick={handleShare}
+                  data-testid="share-car-btn"
+                  className="flex items-center justify-center gap-2 w-full border-2 border-border hover:border-primary text-foreground font-semibold py-3 px-6 rounded-xl transition-colors"
+                >
+                  {shared ? <Check className="w-5 h-5 text-success" /> : <Share2 className="w-5 h-5" />}
+                  {shared ? "Link copied!" : "Share This Car"}
                 </button>
               </div>
 
@@ -451,7 +496,38 @@ export default function CarDetailPage() {
             </div>
           </div>
         </div>
+
+        {/* Similar Cars */}
+        {relatedCars.length > 0 && (
+          <div className="mt-16">
+            <div className="flex items-end justify-between mb-8">
+              <div>
+                <span className="text-xs uppercase tracking-[0.25em] text-accent">You may also like</span>
+                <h2 className="font-display text-3xl text-white mt-2">Similar cars</h2>
+              </div>
+              <Link href="/cars" className="inline-flex items-center gap-2 text-accent hover:text-accent-hover font-semibold whitespace-nowrap">
+                View all
+                <ArrowLeft className="w-4 h-4 rotate-180" />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {relatedCars.map((c) => (
+                <CarCard key={c.id} car={c} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
+
+      {lightboxOpen && car.images && car.images.length > 0 && (
+        <Lightbox
+          images={car.images}
+          index={activeImage}
+          title={car.title}
+          onClose={() => setLightboxOpen(false)}
+          onIndexChange={setActiveImage}
+        />
+      )}
     </div>
   );
 }

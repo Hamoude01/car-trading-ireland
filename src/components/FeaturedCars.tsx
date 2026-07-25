@@ -2,10 +2,11 @@
 
 import { useState, useEffect } from "react";
 import CarCard from "./CarCard";
+import CarCardSkeleton from "./CarCardSkeleton";
 import { getCars } from "@/lib/carStore";
 import type { Car } from "@/lib/types";
 
-const MAX_FEATURED = 4;
+const MAX_FEATURED = 3;
 
 export default function FeaturedCars() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -25,8 +26,10 @@ export default function FeaturedCars() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary border-t-transparent" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[0, 1, 2].map((i) => (
+          <CarCardSkeleton key={i} />
+        ))}
       </div>
     );
   }

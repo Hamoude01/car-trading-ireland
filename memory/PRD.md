@@ -23,6 +23,15 @@ Next.js 16 + Supabase car dealership site for Ireland. Deploys to Netlify → ha
 - Repo pushes to GitHub (Hamoude01/car-trading-ireland) via "Save to Github", Netlify auto-builds.
 - Supabase creds live in netlify.toml (NEXT_PUBLIC_SUPABASE_URL / ANON_KEY). Local dev uses /app/.env.local (gitignored).
 
+### 2026-06 — Apple/Huawei-style cinematic scroll
+- Added motion to landing: `HeroParallax` (hero image zoom/drift + text fade on scroll), `CinematicShowcase` (pinned full-screen section, headlight image scales up as you scroll through it, statement text fades in/out — Apple product-page style), and `Reveal` (IntersectionObserver scroll-in on every section). Lightweight, no extra deps. TS clean, verified via scroll screenshots.
+
+### 2026-06 — Gallery lightbox + pro polish
+- `Lightbox` (fullscreen, keyboard + swipe nav, zoom/pan, thumbnail strip, counter) opened from car detail main image / expand button.
+- Working Share button (Web Share API + clipboard fallback), "Similar cars" section on detail page.
+- `FloatingActions` (site-wide WhatsApp float + scroll-triggered back-to-top).
+- Skeleton loaders (`CarCardSkeleton`) replace spinners on home featured + inventory. TS clean, verified.
+
 ## Backlog
 - P1: Fullscreen lightbox + swipe on car gallery (mobile zoom).
 - P2: SEO/OpenGraph images per listing; sitemap.
