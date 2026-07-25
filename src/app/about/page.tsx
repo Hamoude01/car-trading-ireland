@@ -160,7 +160,7 @@ export default function AboutPage() {
               <span className="font-semibold">WhatsApp</span>
             </a>
             <a
-              href="https://www.facebook.com/mike.mersar"
+              href="https://www.facebook.com/share/1G3xANNdoR/"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-3 bg-[#1877F2]/5 hover:bg-[#1877F2]/10 border border-[#1877F2]/20 px-5 py-4 rounded-xl transition-colors"

@@ -45,7 +45,7 @@ export default function Footer() {
                 <Send className="w-5 h-5" />
               </a>
               <a
-                href="https://www.facebook.com/mike.mersar"
+                href="https://www.facebook.com/share/1G3xANNdoR/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 flex items-center justify-center rounded-full border border-border text-gray-300 hover:border-accent hover:text-accent transition-colors"

@@ -121,7 +121,7 @@ export default function ContactPage() {
 
               {/* Facebook */}
               <a
-                href="https://www.facebook.com/mike.mersar"
+                href="https://www.facebook.com/share/1G3xANNdoR/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 bg-[#1877F2]/5 border border-[#1877F2]/20 rounded-xl hover:bg-[#1877F2]/10 transition-colors mb-4"

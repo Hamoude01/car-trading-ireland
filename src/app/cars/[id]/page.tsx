@@ -406,7 +406,7 @@ export default function CarDetailPage() {
                   WhatsApp Us
                 </a>
                 <a
-                  href="https://www.facebook.com/mike.mersar"
+                  href="https://www.facebook.com/share/1G3xANNdoR/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 w-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold py-3 px-6 rounded-xl transition-colors"
@@ -485,7 +485,7 @@ export default function CarDetailPage() {
                 WhatsApp Us
               </a>
               <a
-                href="https://www.facebook.com/mike.mersar"
+                href="https://www.facebook.com/share/1G3xANNdoR/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold py-3 px-6 rounded-xl transition-colors"
