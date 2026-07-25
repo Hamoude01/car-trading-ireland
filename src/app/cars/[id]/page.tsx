@@ -21,6 +21,8 @@ import {
   DoorOpen,
   Users,
   Clock,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
 
@@ -28,10 +30,12 @@ export default function CarDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [car, setCar] = useState<Car | null>(null);
   const [loading, setLoading] = useState(true);
+  const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
     getCar(id).then((found) => {
       setCar(found || null);
+      setActiveImage(0);
       setLoading(false);
     });
   }, [id]);
@@ -81,21 +85,84 @@ export default function CarDetailPage() {
             {/* Image Gallery */}
             <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden">
               {car.images && car.images.length > 0 ? (
-                <div className="aspect-[16/9] relative">
-                  <img
-                    src={car.images[0]}
-                    alt={car.title}
-                    className="w-full h-full object-cover"
-                  />
-                  {car.featured && (
-                    <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
-                      Featured
-                    </span>
-                  )}
-                  {car.sellerType === "owner" && (
-                    <span className="absolute top-4 right-4 bg-success text-white px-4 py-1.5 rounded-full text-sm font-bold">
-                      Our Stock
-                    </span>
+                <div>
+                  <div className="aspect-[16/9] relative group">
+                    <img
+                      key={activeImage}
+                      src={car.images[activeImage]}
+                      alt={`${car.title} - photo ${activeImage + 1}`}
+                      className="w-full h-full object-cover"
+                      data-testid="car-gallery-main-image"
+                    />
+                    {car.featured && (
+                      <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
+                        Featured
+                      </span>
+                    )}
+                    {car.sellerType === "owner" && (
+                      <span className="absolute top-4 right-4 bg-success text-white px-4 py-1.5 rounded-full text-sm font-bold">
+                        Our Stock
+                      </span>
+                    )}
+                    {car.images.length > 1 && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActiveImage(
+                              (activeImage - 1 + car.images.length) %
+                                car.images.length
+                            )
+                          }
+                          aria-label="Previous photo"
+                          data-testid="car-gallery-prev-btn"
+                          className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActiveImage((activeImage + 1) % car.images.length)
+                          }
+                          aria-label="Next photo"
+                          data-testid="car-gallery-next-btn"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-colors"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
+                        <span className="absolute bottom-3 right-3 bg-black/60 text-white text-xs font-medium px-2.5 py-1 rounded-full">
+                          {activeImage + 1} / {car.images.length}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  {car.images.length > 1 && (
+                    <div
+                      className="flex gap-2 p-3 overflow-x-auto"
+                      data-testid="car-gallery-thumbnails"
+                    >
+                      {car.images.map((img, idx) => (
+                        <button
+                          type="button"
+                          key={idx}
+                          onClick={() => setActiveImage(idx)}
+                          aria-label={`View photo ${idx + 1}`}
+                          data-testid={`car-gallery-thumb-${idx}`}
+                          className={`relative flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                            idx === activeImage
+                              ? "border-accent ring-2 ring-accent/30"
+                              : "border-transparent opacity-70 hover:opacity-100"
+                          }`}
+                        >
+                          <img
+                            src={img}
+                            alt={`${car.title} thumbnail ${idx + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ))}
+                    </div>
                   )}
                 </div>
               ) : (
