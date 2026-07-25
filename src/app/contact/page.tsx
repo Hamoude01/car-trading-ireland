@@ -159,9 +159,9 @@ export default function ContactPage() {
                 <ExternalLink className="w-4 h-4 text-gray-400 ml-auto" />
               </a>
 
-              {/* Facebook Marketplace */}
+              {/* Facebook Page */}
               <a
-                href="https://www.facebook.com/marketplace"
+                href="https://www.facebook.com/share/1G3xANNdoR/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-4 p-4 bg-gray-50 border border-border rounded-xl hover:bg-gray-100 transition-colors"
@@ -170,9 +170,9 @@ export default function ContactPage() {
                   <FacebookIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold">Facebook Marketplace</h3>
+                  <h3 className="font-bold">Facebook Page</h3>
                   <p className="text-gray-600 text-sm">
-                    Browse our listings on Marketplace
+                    Visit our Facebook page
                   </p>
                 </div>
                 <ExternalLink className="w-4 h-4 text-gray-400 ml-auto" />
