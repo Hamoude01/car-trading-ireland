@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary via-primary-dark to-[#072a40] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-b from-[#141417] to-black flex items-center justify-center px-4">
       <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-4">

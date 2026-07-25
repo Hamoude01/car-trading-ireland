@@ -1,88 +1,105 @@
 import Link from "next/link";
-import SearchBar from "@/components/SearchBar";
 import FeaturedCars from "@/components/FeaturedCars";
-import CarCount from "@/components/CarCount";
-import {
-  Shield,
-  Handshake,
-  TrendingUp,
-  ArrowRight,
-  ExternalLink,
-  Star,
-  Users,
-  Car,
-  MessageCircle,
-} from "lucide-react";
-import { FacebookIcon, InstagramIcon } from "@/components/SocialIcons";
+import { ArrowRight, ShieldCheck, FileText, Search, Sparkles } from "lucide-react";
+
+const BRANDS = [
+  "Porsche", "Mercedes-Benz", "Audi", "BMW", "Land Rover",
+  "Tesla", "Jaguar", "Volvo", "Lexus", "Volkswagen",
+];
+
+const HERO_IMG =
+  "https://images.unsplash.com/photo-1653407497540-26207a2408d7?crop=entropy&cs=srgb&fm=jpg&q=85&w=2000&auto=format&fit=crop";
+const DETAIL_IMG_1 =
+  "https://images.unsplash.com/photo-1605437241278-c1806d14a4d9?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200&auto=format&fit=crop";
+const DETAIL_IMG_2 =
+  "https://images.unsplash.com/photo-1618642542397-ef97a739f1d7?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200&auto=format&fit=crop";
 
 export default function Home() {
-
   return (
     <div>
-      {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-primary via-primary-dark to-[#072a40] text-white">
-        <div className="absolute inset-0 bg-[url('/hero-pattern.svg')] opacity-5" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <div className="text-center max-w-3xl mx-auto mb-10">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-sm mb-6">
-              <Star className="w-4 h-4 text-accent" />
-              <span>Trusted Car Sales Across Ireland</span>
-            </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-tight">
-              Find Your Perfect
+      {/* ===== HERO ===== */}
+      <section className="relative min-h-[92vh] flex items-center -mt-20 pt-20 overflow-hidden">
+        <img
+          src={HERO_IMG}
+          alt="Premium car"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full py-24">
+          <div className="max-w-2xl">
+            <span className="fade-up inline-flex items-center gap-2 text-xs uppercase tracking-[0.25em] text-accent mb-6">
+              <Sparkles className="w-4 h-4" />
+              Premium used cars · Ireland
+            </span>
+            <h1 className="fade-up-2 font-display text-5xl sm:text-6xl lg:text-7xl leading-[1.02] text-white">
+              The car you want.
               <br />
-              <span className="text-accent">Car Today</span>
+              <span className="text-accent">Delivered right.</span>
             </h1>
-            <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
-              Welcome to <strong className="text-white">Hamoude Car Trade</strong> &mdash; browse
-              our selection of quality used cars or let us sell your car for you.
-              Serving buyers and sellers across all of Ireland.
+            <p className="fade-up-3 text-lg text-gray-300 leading-relaxed mt-7 max-w-xl">
+              A curated collection of premium used cars — inspected, verified,
+              and ready to drive away. Serving buyers and sellers across all of
+              Ireland.
             </p>
-          </div>
-
-          <div className="max-w-4xl mx-auto">
-            <SearchBar />
-          </div>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-6 text-sm text-gray-300">
-            <div className="flex items-center gap-2">
-              <Car className="w-5 h-5 text-accent" />
-              <span>
-                <CarCount />+ Cars
-                Available
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Users className="w-5 h-5 text-accent" />
-              <span>
-                <strong className="text-white">100+</strong> Happy Customers
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-accent" />
-              <span>All Cars Checked &amp; Verified</span>
+            <div className="fade-up-4 flex flex-wrap gap-4 mt-10">
+              <Link
+                href="/cars"
+                data-testid="hero-explore-btn"
+                className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-black font-semibold px-8 py-4 rounded-full transition-colors"
+              >
+                Explore inventory
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+              <Link
+                href="/sell-your-car"
+                data-testid="hero-sell-btn"
+                className="inline-flex items-center gap-2 border border-white/25 hover:border-accent text-white hover:text-accent font-semibold px-8 py-4 rounded-full transition-colors"
+              >
+                Sell your car
+              </Link>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Featured Cars */}
-      <section className="py-16 bg-muted">
+      {/* ===== BRAND MARQUEE ===== */}
+      <section className="border-y border-border bg-black py-7 overflow-hidden">
+        <div className="marquee-track">
+          {[...BRANDS, ...BRANDS].map((brand, i) => (
+            <span
+              key={i}
+              className="mx-8 text-lg font-display text-gray-500 whitespace-nowrap tracking-wide"
+            >
+              {brand}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      {/* ===== THE COLLECTION ===== */}
+      <section className="py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-foreground">
-                Featured Cars
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-14">
+            <div className="max-w-2xl">
+              <span className="text-xs uppercase tracking-[0.25em] text-accent">
+                The Collection
+              </span>
+              <h2 className="font-display text-4xl sm:text-5xl text-white mt-4">
+                Every car, hand-picked.
               </h2>
-              <p className="text-gray-600 mt-1">
-                Hand-picked quality vehicles at great prices
+              <p className="text-gray-400 leading-relaxed mt-5">
+                We don&apos;t list everything. We list the right things — each
+                vehicle chosen, inspected and prepared to a standard we&apos;d
+                drive ourselves.
               </p>
             </div>
             <Link
               href="/cars"
-              className="flex items-center gap-2 text-accent hover:text-accent-hover font-semibold transition-colors"
+              className="inline-flex items-center gap-2 text-accent hover:text-accent-hover font-semibold whitespace-nowrap"
             >
-              View All Cars
+              View all cars
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -91,167 +108,77 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Why Choose Us */}
-      <section className="py-16">
+      {/* ===== ATTENTION TO DETAIL ===== */}
+      <section className="py-24 bg-black border-y border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-foreground">
-              Why Choose Hamoude Car Trade?
-            </h2>
-            <p className="text-gray-600 mt-2 max-w-2xl mx-auto">
-              More than just a car dealer &mdash; your trusted partner in finding
-              or selling the right car in Ireland
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-8 rounded-2xl bg-muted border border-border hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Shield className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="font-bold text-xl mb-2">Quality Guaranteed</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Every car is thoroughly inspected before sale. Full history
-                checks and NCT &amp; tax verification on every vehicle.
-              </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
+            <div className="grid grid-cols-2 gap-4">
+              <img
+                src={DETAIL_IMG_1}
+                alt="Car interior detail"
+                className="rounded-2xl border border-border w-full h-64 object-cover mt-8"
+              />
+              <img
+                src={DETAIL_IMG_2}
+                alt="Premium car detail"
+                className="rounded-2xl border border-border w-full h-64 object-cover"
+              />
             </div>
-
-            <div className="text-center p-8 rounded-2xl bg-muted border border-border hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-xl flex items-center justify-center">
-                <Handshake className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="font-bold text-xl mb-2">
-                Commission Sales Service
-              </h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Want to sell your car? We handle everything &mdash; photos, enquiries,
-                test drives. You only pay when it sells.
-              </p>
-            </div>
-
-            <div className="text-center p-8 rounded-2xl bg-muted border border-border hover:shadow-md transition-shadow">
-              <div className="w-14 h-14 mx-auto mb-4 bg-primary/10 rounded-xl flex items-center justify-center">
-                <TrendingUp className="w-7 h-7 text-primary" />
-              </div>
-              <h3 className="font-bold text-xl mb-2">Multi-Platform Reach</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                Your car gets listed on our website, Facebook Marketplace, and
-                DoneDeal.ie for maximum exposure and faster sales.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Sell Your Car CTA */}
-      <section className="py-16 bg-gradient-to-r from-primary to-primary-dark text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-            <div className="max-w-xl">
-              <h2 className="text-3xl font-bold mb-4">
-                Want to Sell Your Car?
+            <div>
+              <span className="text-xs uppercase tracking-[0.25em] text-accent">
+                Attention to detail
+              </span>
+              <h2 className="font-display text-4xl sm:text-5xl text-white mt-4">
+                Built on trust, down to the last detail.
               </h2>
-              <p className="text-gray-300 text-lg leading-relaxed mb-6">
-                We offer a hassle-free commission-based selling service. Your
-                car gets listed on our site, Facebook Marketplace, and
-                DoneDeal.ie. We handle the advertising, enquiries, test drives,
-                and paperwork.
-              </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  href="/sell-your-car"
-                  className="bg-accent hover:bg-accent-hover text-white font-bold py-3 px-8 rounded-xl transition-colors"
-                >
-                  Get Started
-                </Link>
-                <a
-                  href="https://wa.me/353877110508"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-[#25D366] hover:bg-[#1da851] text-white font-bold py-3 px-8 rounded-xl transition-colors"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  WhatsApp Us
-                </a>
+              <div className="mt-8 space-y-6">
+                {[
+                  { icon: ShieldCheck, title: "NCT Verified", desc: "Every car checked and roadworthy before sale." },
+                  { icon: FileText, title: "Full History", desc: "Transparent service records available on request." },
+                  { icon: Search, title: "Multi-point Inspection", desc: "Mechanical and cosmetic assessment on every vehicle." },
+                ].map((item) => (
+                  <div key={item.title} className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-5 h-5 text-accent" />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-xl text-white">{item.title}</h3>
+                      <p className="text-gray-400 text-sm mt-1 leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div className="flex flex-col gap-4 bg-white/10 backdrop-blur-sm rounded-2xl p-6 min-w-[280px]">
-              <h3 className="font-semibold text-lg text-center mb-2">
-                Find Us On
-              </h3>
-              <a
-                href="https://www.facebook.com/mike.mersar"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl transition-colors"
-              >
-                <FacebookIcon className="w-6 h-6 text-[#1877F2]" />
-                <span className="font-medium">Facebook &mdash; Mike Mersar</span>
-                <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
-              </a>
-              <a
-                href="https://www.instagram.com/h_mou_de"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl transition-colors"
-              >
-                <InstagramIcon className="w-6 h-6 text-[#E4405F]" />
-                <span className="font-medium">Instagram &mdash; @h_mou_de</span>
-                <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
-              </a>
-              <a
-                href="https://www.facebook.com/marketplace"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl transition-colors"
-              >
-                <FacebookIcon className="w-6 h-6 text-[#1877F2]" />
-                <span className="font-medium">Facebook Marketplace</span>
-                <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
-              </a>
-              <a
-                href="https://www.donedeal.ie"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-3 bg-white/10 hover:bg-white/20 px-5 py-3 rounded-xl transition-colors"
-              >
-                <div className="w-6 h-6 bg-[#00b67a] rounded text-white flex items-center justify-center text-xs font-bold">
-                  DD
-                </div>
-                <span className="font-medium">DoneDeal.ie</span>
-                <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
-              </a>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Vehicle Ownership Transfer */}
-      <section className="py-12 bg-muted">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white rounded-2xl shadow-sm border border-border p-6 sm:p-8 flex flex-col sm:flex-row items-center gap-6">
-            <div className="w-14 h-14 bg-success/10 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Shield className="w-7 h-7 text-success" />
-            </div>
-            <div className="flex-1 text-center sm:text-left">
-              <h3 className="font-bold text-lg">
-                Vehicle Ownership Transfer
-              </h3>
-              <p className="text-gray-600 text-sm mt-1">
-                Change of vehicle ownership can be completed online through the
-                official government portal. We can help guide you through the
-                process.
+      {/* ===== SELL WITH US ===== */}
+      <section className="py-24">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative rounded-3xl border border-border bg-surface overflow-hidden p-10 sm:p-16 text-center">
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-accent/10 rounded-full blur-3xl" />
+            <div className="relative">
+              <span className="text-xs uppercase tracking-[0.25em] text-accent">
+                Sell with us
+              </span>
+              <h2 className="font-display text-4xl sm:text-5xl text-white mt-4">
+                Got a car to sell? We&apos;ll handle it.
+              </h2>
+              <p className="text-gray-400 leading-relaxed mt-5 max-w-2xl mx-auto">
+                Upload a few photos and details. Our team reviews every
+                submission and comes back with a fair, market-based valuation —
+                no pressure, no obligation.
               </p>
+              <Link
+                href="/sell-your-car"
+                data-testid="sell-cta-btn"
+                className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-black font-semibold px-8 py-4 rounded-full transition-colors mt-9"
+              >
+                Start your valuation
+                <ArrowRight className="w-5 h-5" />
+              </Link>
             </div>
-            <a
-              href="https://www.vehicleservices.gov.ie/cvo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-xl transition-colors whitespace-nowrap"
-            >
-              Transfer Online
-              <ExternalLink className="w-4 h-4" />
-            </a>
           </div>
         </div>
       </section>
