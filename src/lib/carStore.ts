@@ -31,6 +31,7 @@ function dbRowToCar(row: Record<string, unknown>): Car {
     featured: (row.featured as boolean) || false,
     dateAdded: (row.date_added as string) || new Date().toISOString(),
     previousOwners: (row.previous_owners as number) || 0,
+    availabilityStatus: (row.availability_status as Car["availabilityStatus"]) || "available",
   };
 }
 
@@ -59,6 +60,7 @@ function carToDbRow(car: Car): Record<string, unknown> {
     featured: car.featured,
     date_added: car.dateAdded,
     previous_owners: car.previousOwners,
+    availability_status: car.availabilityStatus,
   };
 }
 
