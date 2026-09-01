@@ -22,6 +22,7 @@ export interface Car {
   featured: boolean;
   dateAdded: string;
   previousOwners: number;
+  availabilityStatus: "available" | "reserved" | "sold";
 }
 
 export interface Submission {
