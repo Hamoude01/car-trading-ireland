@@ -1,5 +1,10 @@
 import { getSupabase } from "./supabase";
-import type { Car, Submission, ContactMessage } from "./types";
+import type {
+  AvailabilityStatus,
+  Car,
+  Submission,
+  ContactMessage,
+} from "./types";
 
 const AUTH_KEY = "hamoude_admin_auth";
 const ADMIN_PASSWORD = "hamoude2024";
@@ -7,6 +12,9 @@ const ADMIN_PASSWORD = "hamoude2024";
 // --- Car operations (Supabase) ---
 
 function dbRowToCar(row: Record<string, unknown>): Car {
+  const availabilityStatus: AvailabilityStatus =
+    row.availability_status === "sold" ? "sold" : "available";
+
   return {
     id: row.id as string,
     title: row.title as string,
@@ -31,7 +39,7 @@ function dbRowToCar(row: Record<string, unknown>): Car {
     featured: (row.featured as boolean) || false,
     dateAdded: (row.date_added as string) || new Date().toISOString(),
     previousOwners: (row.previous_owners as number) || 0,
-    availabilityStatus: (row.availability_status as Car["availabilityStatus"]) || "available",
+    availabilityStatus,
   };
 }
 
@@ -91,6 +99,20 @@ export async function saveCar(car: Car): Promise<void> {
   const { error } = await getSupabase().from("cars").upsert(row, { onConflict: "id" });
   if (error) {
     console.error("Error saving car:", error);
+    throw error;
+  }
+}
+
+export async function updateCarAvailabilityStatus(
+  id: string,
+  availabilityStatus: AvailabilityStatus
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from("cars")
+    .update({ availability_status: availabilityStatus })
+    .eq("id", id);
+  if (error) {
+    console.error("Error updating car availability status:", error);
     throw error;
   }
 }

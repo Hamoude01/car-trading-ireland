@@ -12,6 +12,7 @@ import {
   yearRange,
 } from "@/lib/data";
 import { getCars } from "@/lib/carStore";
+import { sortCarsByAvailability } from "@/lib/carAvailability";
 import type { Car } from "@/lib/types";
 import { Search, SlidersHorizontal, X, RotateCcw } from "lucide-react";
 
@@ -84,7 +85,7 @@ export default function CarsClient() {
         break;
     }
 
-    return filtered;
+    return sortCarsByAvailability(filtered);
   }, [cars, make, county, minYear, maxPrice, fuelType, bodyType, transmission, sortBy, searchQuery]);
 
   const activeFilterCount = [
