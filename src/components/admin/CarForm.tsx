@@ -44,6 +44,7 @@ export default function CarForm({ existingCar }: CarFormProps) {
     sellerType: existingCar?.sellerType || "owner",
     featured: existingCar?.featured || false,
     previousOwners: existingCar?.previousOwners || 1,
+    availabilityStatus: existingCar?.availabilityStatus || "available",
   });
 
   const [features, setFeatures] = useState<string[]>(
@@ -155,7 +156,8 @@ export default function CarForm({ existingCar }: CarFormProps) {
       featured: formData.featured,
       dateAdded: existingCar?.dateAdded || new Date().toISOString().slice(0, 10),
       previousOwners: formData.previousOwners,
-      availabilityStatus: existingCar?.availabilityStatus || "available",
+      availabilityStatus:
+        formData.availabilityStatus as Car["availabilityStatus"],
     };
 
     try {
@@ -454,7 +456,7 @@ export default function CarForm({ existingCar }: CarFormProps) {
           {/* Seller & Listing */}
           <div className="bg-white rounded-2xl border border-border p-6">
             <h2 className="text-lg font-bold mb-4">Listing Settings</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Seller Type
@@ -467,6 +469,20 @@ export default function CarForm({ existingCar }: CarFormProps) {
                 >
                   <option value="owner">My Car (Own Stock)</option>
                   <option value="commission">Commission Sale</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">
+                  Availability Status
+                </label>
+                <select
+                  name="availabilityStatus"
+                  value={formData.availabilityStatus}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2.5 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                >
+                  <option value="available">Available</option>
+                  <option value="sold">Sold</option>
                 </select>
               </div>
               <div className="flex items-center gap-3 pt-6">

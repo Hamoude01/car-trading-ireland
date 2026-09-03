@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   getCars,
+  updateCarAvailabilityStatus,
   deleteCar,
   isAuthenticated,
   logout,
@@ -15,7 +16,12 @@ import {
   updateContactMessageStatus,
   deleteContactMessage,
 } from "@/lib/carStore";
-import type { Car, Submission, ContactMessage } from "@/lib/types";
+import type {
+  AvailabilityStatus,
+  Car,
+  Submission,
+  ContactMessage,
+} from "@/lib/types";
 import {
   Plus,
   Pencil,
@@ -42,6 +48,7 @@ export default function AdminDashboard() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [deleteSubId, setDeleteSubId] = useState<string | null>(null);
   const [deleteMsgId, setDeleteMsgId] = useState<string | null>(null);
+  const [updatingStatusId, setUpdatingStatusId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"cars" | "submissions" | "messages">("cars");
 
   useEffect(() => {
@@ -63,6 +70,22 @@ export default function AdminDashboard() {
       alert("Failed to delete car. Please try again.");
     }
     setDeleteId(null);
+  };
+
+  const handleAvailabilityStatus = async (
+    id: string,
+    availabilityStatus: AvailabilityStatus
+  ) => {
+    setUpdatingStatusId(id);
+    try {
+      await updateCarAvailabilityStatus(id, availabilityStatus);
+      const updated = await getCars();
+      setCars(updated);
+    } catch {
+      alert("Failed to update vehicle availability. Please try again.");
+    } finally {
+      setUpdatingStatusId(null);
+    }
   };
 
   const handleLogout = () => {
@@ -281,6 +304,9 @@ export default function AdminDashboard() {
                         <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600 hidden lg:table-cell">
                           Featured
                         </th>
+                        <th className="text-left py-3 px-4 text-sm font-semibold text-gray-600">
+                          Availability
+                        </th>
                         <th className="text-right py-3 px-4 text-sm font-semibold text-gray-600">
                           Actions
                         </th>
@@ -344,6 +370,27 @@ export default function AdminDashboard() {
                             ) : (
                               <StarOff className="w-5 h-5 text-gray-300" />
                             )}
+                          </td>
+                          <td className="py-3 px-4">
+                            <select
+                              value={car.availabilityStatus}
+                              onChange={(event) =>
+                                handleAvailabilityStatus(
+                                  car.id,
+                                  event.target.value as AvailabilityStatus
+                                )
+                              }
+                              disabled={updatingStatusId === car.id}
+                              aria-label={`Availability status for ${car.title}`}
+                              className={`min-w-28 rounded-lg border px-3 py-2 text-sm font-semibold outline-none transition-colors focus:ring-2 focus:ring-primary disabled:cursor-wait disabled:opacity-60 ${
+                                car.availabilityStatus === "sold"
+                                  ? "border-red-200 bg-red-50 text-red-700"
+                                  : "border-emerald-200 bg-emerald-50 text-emerald-700"
+                              }`}
+                            >
+                              <option value="available">Available</option>
+                              <option value="sold">Sold</option>
+                            </select>
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center justify-end gap-2">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import CarCard from "./CarCard";
 import CarCardSkeleton from "./CarCardSkeleton";
 import { getCars } from "@/lib/carStore";
+import { sortCarsByAvailability } from "@/lib/carAvailability";
 import type { Car } from "@/lib/types";
 
 const MAX_FEATURED = 3;
@@ -14,11 +15,13 @@ export default function FeaturedCars() {
 
   useEffect(() => {
     getCars().then((allCars) => {
-      const featured = allCars.filter((car) => car.featured);
+      const featured = sortCarsByAvailability(
+        allCars.filter((car) => car.featured)
+      );
       if (featured.length > 0) {
         setCars(featured.slice(0, MAX_FEATURED));
       } else {
-        setCars(allCars.slice(0, MAX_FEATURED));
+        setCars(sortCarsByAvailability(allCars).slice(0, MAX_FEATURED));
       }
       setLoading(false);
     });

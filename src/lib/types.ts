@@ -1,3 +1,5 @@
+export type AvailabilityStatus = "available" | "sold";
+
 export interface Car {
   id: string;
   title: string;
@@ -22,7 +24,7 @@ export interface Car {
   featured: boolean;
   dateAdded: string;
   previousOwners: number;
-  availabilityStatus: "available" | "reserved" | "sold";
+  availabilityStatus: AvailabilityStatus;
 }
 
 export interface Submission {

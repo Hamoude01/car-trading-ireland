@@ -8,14 +8,15 @@ interface CarCardProps {
 
 export default function CarCard({ car }: CarCardProps) {
   const isSold = car.availabilityStatus === "sold";
-  const isReserved = car.availabilityStatus === "reserved";
 
   return (
     <Link
       href={`/cars/${car.id}`}
       data-testid={`car-card-${car.id}`}
-      className={`group bg-surface rounded-2xl border border-border overflow-hidden flex flex-col transition-all duration-300 hover:border-accent/50 hover:-translate-y-1 ${
-        isSold ? "opacity-75" : ""
+      className={`group bg-surface rounded-2xl border overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 ${
+        isSold
+          ? "border-red-500/50 hover:border-red-400/70"
+          : "border-border hover:border-accent/50"
       }`}
     >
       <div className={`relative aspect-[16/10] bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden ${
@@ -38,23 +39,18 @@ export default function CarCard({ car }: CarCardProps) {
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
-        {car.featured && (
-          <span className="absolute top-3 left-3 bg-accent text-black px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider">
-            Featured
-          </span>
-        )}
-
-        {isSold && (
-          <span className="absolute top-3 left-3 bg-red-600 text-white px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider">
-            Sold
-          </span>
-        )}
-
-        {isReserved && !isSold && (
-          <span className="absolute top-3 left-3 bg-orange-500 text-white px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider">
-            Reserved
-          </span>
-        )}
+        <div className="absolute top-3 left-3 flex flex-col items-start gap-2">
+          {isSold && (
+            <span className="bg-red-600 text-white px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg">
+              Sold
+            </span>
+          )}
+          {car.featured && (
+            <span className="bg-accent text-black px-3 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg">
+              Featured
+            </span>
+          )}
+        </div>
 
         {car.images && car.images.length > 1 && (
           <span className="absolute top-3 right-3 inline-flex items-center gap-1 bg-black/70 backdrop-blur-sm text-white px-2.5 py-1 rounded-full text-xs font-medium">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { getCar, getCars } from "@/lib/carStore";
+import { sortCarsByAvailability } from "@/lib/carAvailability";
 import type { Car } from "@/lib/types";
 import CarCard from "@/components/CarCard";
 import Lightbox from "@/components/Lightbox";
@@ -88,10 +89,12 @@ export default function CarDetailPage() {
     );
   }
 
-  const relatedCars = similar
-    .filter((c) => c.make === car.make)
-    .concat(similar.filter((c) => c.make !== car.make))
-    .slice(0, 3);
+  const isSold = car.availabilityStatus === "sold";
+  const relatedCars = sortCarsByAvailability(
+    similar
+      .filter((c) => c.make === car.make)
+      .concat(similar.filter((c) => c.make !== car.make))
+  ).slice(0, 3);
 
   return (
     <div className="bg-muted min-h-screen">
@@ -122,7 +125,9 @@ export default function CarDetailPage() {
                       src={car.images[activeImage]}
                       alt={`${car.title} - photo ${activeImage + 1}`}
                       onClick={() => setLightboxOpen(true)}
-                      className="w-full h-full object-cover cursor-zoom-in"
+                      className={`w-full h-full object-cover cursor-zoom-in ${
+                        isSold ? "grayscale opacity-70" : ""
+                      }`}
                       data-testid="car-gallery-main-image"
                     />
                     <button
@@ -135,11 +140,21 @@ export default function CarDetailPage() {
                       <Maximize2 className="w-3.5 h-3.5" />
                       View fullscreen
                     </button>
-                    {car.featured && (
-                      <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
-                        Featured
-                      </span>
+                    {isSold && (
+                      <div className="absolute inset-0 pointer-events-none bg-black/20" />
                     )}
+                    <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
+                      {isSold && (
+                        <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-lg">
+                          Sold
+                        </span>
+                      )}
+                      {car.featured && (
+                        <span className="bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-lg">
+                          Featured
+                        </span>
+                      )}
+                    </div>
                     {car.sellerType === "owner" && (
                       <span className="absolute top-4 right-4 bg-success text-white px-4 py-1.5 rounded-full text-sm font-bold">
                         Our Stock
@@ -226,14 +241,23 @@ export default function CarDetailPage() {
                       {car.make} {car.model}
                     </p>
                     <p className="text-sm mt-1">
-                      Photos coming soon &mdash; contact us for more details
+                      {isSold
+                        ? "This vehicle has been sold."
+                        : "Photos coming soon — contact us for more details"}
                     </p>
                   </div>
-                  {car.featured && (
-                    <span className="absolute top-4 left-4 bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide">
-                      Featured
-                    </span>
-                  )}
+                  <div className="absolute top-4 left-4 flex flex-col items-start gap-2">
+                    {isSold && (
+                      <span className="bg-red-600 text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-lg">
+                        Sold
+                      </span>
+                    )}
+                    {car.featured && (
+                      <span className="bg-accent text-white px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide shadow-lg">
+                        Featured
+                      </span>
+                    )}
+                  </div>
                   {car.sellerType === "owner" && (
                     <span className="absolute top-4 right-4 bg-success text-white px-4 py-1.5 rounded-full text-sm font-bold">
                       Our Stock
@@ -248,9 +272,20 @@ export default function CarDetailPage() {
               <h1 className="text-2xl font-bold text-foreground">
                 {car.title}
               </h1>
-              <p className="text-3xl font-bold text-primary mt-2">
-                &euro;{car.price.toLocaleString()}
-              </p>
+              {isSold ? (
+                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">
+                  <p className="font-bold uppercase tracking-wider text-red-700">
+                    Sold
+                  </p>
+                  <p className="mt-1 text-sm text-red-700">
+                    This vehicle has been sold and is no longer available for purchase.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-3xl font-bold text-primary mt-2">
+                  &euro;{car.price.toLocaleString()}
+                </p>
+              )}
             </div>
 
             {/* Key Specs */}
@@ -391,38 +426,53 @@ export default function CarDetailPage() {
               <h1 className="text-2xl font-bold text-foreground">
                 {car.title}
               </h1>
-              <p className="text-3xl font-bold text-primary mt-3">
-                &euro;{car.price.toLocaleString()}
-              </p>
+              {isSold ? (
+                <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">
+                  <p className="font-bold uppercase tracking-wider text-red-700">
+                    Sold
+                  </p>
+                  <p className="mt-1 text-sm text-red-700">
+                    This vehicle has been sold and is no longer available for purchase.
+                  </p>
+                </div>
+              ) : (
+                <p className="text-3xl font-bold text-primary mt-3">
+                  &euro;{car.price.toLocaleString()}
+                </p>
+              )}
 
               <div className="mt-6 space-y-3">
-                <a
-                  href="https://wa.me/353877110508"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1da851] text-white font-bold py-3 px-6 rounded-xl transition-colors"
-                >
-                  <MessageCircle className="w-5 h-5" />
-                  WhatsApp Us
-                </a>
-                <a
-                  href="https://www.facebook.com/share/1G3xANNdoR/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold py-3 px-6 rounded-xl transition-colors"
-                >
-                  <FacebookIcon className="w-5 h-5" />
-                  Message on Facebook
-                </a>
-                <a
-                  href="https://www.instagram.com/h_mou_de"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#833AB4] via-[#E4405F] to-[#FCAF45] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-opacity"
-                >
-                  <InstagramIcon className="w-5 h-5" />
-                  DM on Instagram
-                </a>
+                {!isSold && (
+                  <>
+                    <a
+                      href="https://wa.me/353877110508"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1da851] text-white font-bold py-3 px-6 rounded-xl transition-colors"
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                      WhatsApp Us
+                    </a>
+                    <a
+                      href="https://www.facebook.com/share/1G3xANNdoR/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold py-3 px-6 rounded-xl transition-colors"
+                    >
+                      <FacebookIcon className="w-5 h-5" />
+                      Message on Facebook
+                    </a>
+                    <a
+                      href="https://www.instagram.com/h_mou_de"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[#833AB4] via-[#E4405F] to-[#FCAF45] hover:opacity-90 text-white font-bold py-3 px-6 rounded-xl transition-opacity"
+                    >
+                      <InstagramIcon className="w-5 h-5" />
+                      DM on Instagram
+                    </a>
+                  </>
+                )}
                 <button
                   onClick={handleShare}
                   data-testid="share-car-btn"
@@ -447,10 +497,12 @@ export default function CarDetailPage() {
                     <Check className="w-3.5 h-3.5 text-success" />
                     NCT &amp; tax verified
                   </li>
-                  <li className="flex items-center gap-2">
-                    <Check className="w-3.5 h-3.5 text-success" />
-                    Test drive available
-                  </li>
+                  {!isSold && (
+                    <li className="flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-success" />
+                      Test drive available
+                    </li>
+                  )}
                 </ul>
               </div>
 
@@ -475,24 +527,37 @@ export default function CarDetailPage() {
 
             {/* Mobile Contact */}
             <div className="lg:hidden bg-white rounded-2xl shadow-sm border border-border p-6 space-y-3">
-              <a
-                href="https://wa.me/353877110508"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1da851] text-white font-bold py-3 px-6 rounded-xl transition-colors"
-              >
-                <MessageCircle className="w-5 h-5" />
-                WhatsApp Us
-              </a>
-              <a
-                href="https://www.facebook.com/share/1G3xANNdoR/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold py-3 px-6 rounded-xl transition-colors"
-              >
-                <FacebookIcon className="w-5 h-5" />
-                Message on Facebook
-              </a>
+              {isSold ? (
+                <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-center">
+                  <p className="font-bold uppercase tracking-wider text-red-700">
+                    Sold
+                  </p>
+                  <p className="mt-1 text-sm text-red-700">
+                    This vehicle is no longer available for purchase.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <a
+                    href="https://wa.me/353877110508"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#1da851] text-white font-bold py-3 px-6 rounded-xl transition-colors"
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    WhatsApp Us
+                  </a>
+                  <a
+                    href="https://www.facebook.com/share/1G3xANNdoR/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full bg-[#1877F2] hover:bg-[#166fe5] text-white font-bold py-3 px-6 rounded-xl transition-colors"
+                  >
+                    <FacebookIcon className="w-5 h-5" />
+                    Message on Facebook
+                  </a>
+                </>
+              )}
             </div>
           </div>
         </div>
