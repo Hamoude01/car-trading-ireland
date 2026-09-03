@@ -155,6 +155,7 @@ export default function CarForm({ existingCar }: CarFormProps) {
       featured: formData.featured,
       dateAdded: existingCar?.dateAdded || new Date().toISOString().slice(0, 10),
       previousOwners: formData.previousOwners,
+      availabilityStatus: existingCar?.availabilityStatus || "available",
     };
 
     try {
